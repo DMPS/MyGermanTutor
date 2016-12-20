@@ -53,9 +53,9 @@ var newSessionHandlers = {
 var menuHandlers = Alexa.CreateStateHandler(states.MENUMODE, {
     'Menu': function () {
         if (this.attributes.highScore) { //check for new users
-            this.emit(':ask', 'Welcome back! Your highscore is ' + this.attributes.highScore.toString() + '. '+prompts[3])
+            this.emit(':ask', 'Welcome back! Your highscore is ' + this.attributes.highScore.toString() + '. '+prompts[3],repromptText + prompts[3])
         } else {
-            this.emit(':ask',prompts[1]);
+            this.emit(':ask',prompts[1],repromptText + prompts[1]);
         }
     },
     'AMAZON.YesIntent': function () {
@@ -66,7 +66,7 @@ var menuHandlers = Alexa.CreateStateHandler(states.MENUMODE, {
         this.emit(':tell', prompts[2]);
     },
     'Unhandled': function () {
-        this.emit(':ask', repromptText + prompts[3]);
+        this.emit(':ask', repromptText + prompts[3],repromptText + prompts[3]);
     }
 });
 
@@ -78,14 +78,17 @@ var quizHandlers = Alexa.CreateStateHandler(states.QUIZMODE, {
         var question = getQuestion(-1)
         this.attributes.question = question
         this.attributes.score = 0
-        this.emit(':ask', 'Your first question, ' + question.text)
+        this.emit(':ask', 'Your first question, ' + question.text,repromptText+question.text)
     },
     'AnswerIntent': function () {
         var answer = this.event.request.intent.slots.ANSWER.value
-        if(this.attributes.question.answer===answer){
+        if(this.attributes.question.answer===answer){ //Checks if they got it right
             var newQuestion = getQuestion(this.attributes.question.questionNum);
+            this.question = newQuestion
             this.attributes.score++
-            this.emit(':ask', 'Correct, ' + newQuestion.text)
+            this.emit(':ask', 'Correct, ' + newQuestion.text,repromptText+newQuestion.text)
+        }else{
+            this.emitWithState('AMAZON.StopIntent')
         }
     },
     'AMAZON.PauseIntent': function () {
@@ -103,6 +106,6 @@ var quizHandlers = Alexa.CreateStateHandler(states.QUIZMODE, {
         this.handler.state = ''
     },
     'Unhandled': function () {
-        this.emit(':ask',repromptText+this.attributes.question.text); //Asks the user the question again
+        this.emit(':ask',repromptText+this.attributes.question.text,repromptText+this.attributes.question.text); //Asks the user the question again
     }
 })
