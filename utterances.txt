@@ -1,0 +1,11 @@
+AnswerIntent {ANSWER}
+AnswerIntent I choose {ANSWER}
+AnswerIntent Probably {ANSWER}
+AnswerIntent I think {ANSWER}
+AnswerIntent I am going with {ANSWER}
+StartIntent to start my quiz
+StartIntent to start my german quiz
+StartIntent to begin my quiz
+StartIntent to begin
+StartIntent to start 
+StartIntent to get the ball rolling
