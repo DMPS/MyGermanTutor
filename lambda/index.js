@@ -213,7 +213,8 @@ var prompts = [
     'I will ask you a question with four possible answers. Option A,B,C, or D. Just tell me the correct letter and I will check it for you. When you are correct, I will increase your score and we will then continue. If you want to take a break please say, Pause. If you want to give up, then please say, Stop.',
     'Thank you for enabling My German Tutor! Would you like to start a new quiz?',//Add more on tutorial
     'Alright, see you later!',
-    'Would you like to start a new quiz?'
+    'Would you like to start a new quiz?',
+    'Once you start a quiz, I will ask you multiple choice german grammar questions until you get one wrong. Every one that you get right is a point, and your highscore will be saved at the end. Would you like to start a new quiz?'
 ]
 var repromptText = 'I am sorry, I did not quite catch that.'
 
@@ -233,8 +234,15 @@ function getQuestion(lastQuestion) {
 //Handles all brand new users
 var newSessionHandlers = {
     'NewSession': function () {
-        this.handler.state = states.MENUMODE
-        this.emitWithState('Menu')
+        console.log(this.event.request.intent.name)
+        if(this.event.request.intent.name==="StartIntent"){
+            console.log('here')
+            this.handler.state = states.QUIZMODE
+            this.emitWithState('StartIntent')
+        }else{
+            this.handler.state = states.MENUMODE
+            this.emitWithState('Menu')
+        }
     }
 }
 
@@ -243,6 +251,7 @@ var menuHandlers = Alexa.CreateStateHandler(states.MENUMODE, {
         if (this.attributes.highScore) { //check for new users
             this.emit(':ask', 'Welcome back! Your highscore is ' + this.attributes.highScore.toString() + '. ' + prompts[3], repromptText + prompts[3])
         } else {
+            this.attributes.highScore = 0
             this.emit(':ask', prompts[1], repromptText + prompts[1]);
         }
     },
@@ -255,7 +264,9 @@ var menuHandlers = Alexa.CreateStateHandler(states.MENUMODE, {
     'AMAZON.NoIntent': function () {
         this.emit(':tell', prompts[2]);
     },
-
+    'AMAZON.HelpIntent':function(){
+        this.emit(':ask',prompts[4],repromptText+prompts[4])
+    },
     'Unhandled': function () {
         this.emit(':ask', repromptText + prompts[3], repromptText + prompts[3]);
     }
@@ -263,7 +274,8 @@ var menuHandlers = Alexa.CreateStateHandler(states.MENUMODE, {
 
 var quizHandlers = Alexa.CreateStateHandler(states.QUIZMODE, {
     'NewSession': function () {
-        this.emitWithState('StartIntent')
+        this.handler.state = states.MENUMODE
+        this.emitWithState('Menu')
     },
 
     'StartIntent': function () {
@@ -274,7 +286,7 @@ var quizHandlers = Alexa.CreateStateHandler(states.QUIZMODE, {
     },
 
     'AnswerIntent': function () {
-        var answer = this.event.request.intent.slots.ANSWER.value
+        var answer = this.event.request.intent.slots.ANSWER.value.toUpperCase() //makes sure that we catch lower case letters
         if (this.attributes.question.answer === answer) { //Checks if they got it right
             var newQuestion = getQuestion(this.attributes.question.questionNum);
             this.question = newQuestion

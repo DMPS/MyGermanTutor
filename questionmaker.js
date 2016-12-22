@@ -1,3 +1,5 @@
+//A helper script for making questions
+
 var _ = require('lodash')
 var fs = require('fs');
 
