@@ -1,7 +1,10 @@
 {
-    "intents":[
+    "intents": [
         {
             "intent": "AMAZON.StopIntent"
+        },
+        {
+            "intent":"AMAZON.CancelIntent"
         },
         {
             "intent": "AMAZON.PauseIntent"
@@ -13,19 +16,19 @@
             "intent": "AMAZON.NoIntent"
         },
         {
-            "intent":"AMAZON.HelpIntent"
-        }
+            "intent": "AMAZON.HelpIntent"
+        },
         {
-            "intent":"AnswerIntent",
-            "slots":[
+            "intent": "AnswerIntent",
+            "slots": [
                 {
-                    "name":"ANSWER",
-                    "type":"answers"
+                    "name": "ANSWER",
+                    "type": "answers"
                 }
             ]
         },
         {
-            "intent":"StartIntent"
+            "intent": "StartIntent"
         }
     ]
 }
